@@ -404,15 +404,95 @@ class BinarySortTree
         }
         callback(currNode)
     }
-}
 
-let x = new BinarySortTree([1,2,3,4,5,6,7,8,9], true)
-console.log(x.has(4))
-console.log(x.has(23))
-console.log(x.has(23))
-x.deleteItem(5)
-console.log(x)
-x.insertItem(5)
-console.log(x)
-console.log(x.findItem(4))
-console.log("done")
+    height(node)
+    {
+        return this.#heightRecurse(node, 0)
+    }
+
+    #heightRecurse(node, currentHeight)
+    {
+        let left = 0
+        let right = 0
+        if (node.hasLeft())
+        {
+            left = this.#heightRecurse(node.getLeft(), currentHeight+1)
+        }
+        if (node.hasRight())
+        {
+            right = this.#heightRecurse(node.getRight(), currentHeight+1)
+        }
+        if (!node.hasLeft() && !node.hasRight())
+        {
+            return currentHeight
+        }
+
+        if (left > right)
+        {
+            return left
+        }
+        else
+        {
+            return right
+        }
+    }
+
+    depth(node)
+    {
+        let currNode = this.head
+        let depth = 0
+        while (currNode != node)
+        {
+            if (currNode.data > node.data)
+            {
+                currNode = currNode.getLeft()
+            }
+            else
+            {
+                currNode = currNode.getRight()
+            }
+            depth++
+        }
+        return depth
+    }
+
+    isBalanced()
+    {
+        return this.#isBalancedRecurse(this.head)
+    }
+    #isBalancedRecurse(currNode)
+    {
+        let leftHeight = 0
+        let rightHeight = 0
+        if (currNode.hasLeft())
+        {
+            leftHeight = this.height(currNode.getLeft())
+            if (!this.#isBalancedRecurse(currNode.getLeft()))
+            {
+                return false
+            }
+        }
+        if (currNode.hasRight())
+        {
+            rightHeight = this.height(currNode.getRight())
+            if (!this.#isBalancedRecurse(currNode.getRight()))
+            {
+                return false
+            }
+        }
+        if (Math.abs(leftHeight - rightHeight) > 1)
+        {
+            return false
+        }
+
+        return true
+    }
+
+    rebalance()
+    {
+        let nodeArr = []
+        this.inOrder((node) => {nodeArr.push(node.data)})
+        this.head = this.#constructBST(nodeArr)
+        this.size = nodeArr.length
+    }
+}
